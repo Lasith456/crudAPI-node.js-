@@ -28,3 +28,60 @@ app.post('/product',async (req,res)=>{
         res.status(500).json({message:error.message})
     }
 });
+
+// Get data From Database
+app.get('/product', async (req,res)=>{
+    try {
+        const products= await Product.find({});
+        res.status(200).json(products)
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message:error.message})
+    }
+})
+
+// Get data Using product id
+app.get('/product/:id', async (req,res)=>{
+    try {
+        const {id}=req.params;
+        const products=await Product.findById(id);
+        res.status(200).json(products);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({message:error.message})
+    }
+})
+
+// Update And Edit data using ID
+app.put('/product/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByIdAndUpdate(id, req.body);
+        
+        if (!product) {
+            return res.status(404).json({ message: `Cannot find product with ID: ${id}` });
+        }
+
+        const updatedProduct = await Product.findById(id);
+        res.status(200).json(updatedProduct);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Remove or Delete From DataBase
+app.delete('/product/:id',async(req,res)=>{
+    try {
+        const {id}= req.params;
+        const product = await Product.findByIdAndDelete(id);
+        if(!product){
+            return res.status(404).json({message:'cannot Find Product id with : ${id}'});
+        }
+        const products= await Product.find({});
+        res.status(200).json(products)
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ message: error.message });
+    }
+})
